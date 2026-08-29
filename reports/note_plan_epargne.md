@@ -1,6 +1,6 @@
 # Votre plan d'épargne, en dix mille avenirs plutôt qu'un seul
 
-Note préparée à partir du simulateur `pec` (dépôt 12-plan-epargne-ca). Exercice de méthode
+Note préparée à partir du simulateur `pec` (dépôt 12-plan-epargne). Exercice de méthode
 sous hypothèses déclarées ; ceci n'est pas un conseil financier. Chiffres du 2026-08-29,
 cas type : 10 000 $ d'épargne par an pendant 30 ans, 25 ans de retraite, taux marginal de
 35 % pendant la vie active et de 25 % à la retraite (à remplacer par les vôtres).
@@ -44,7 +44,7 @@ taux réels, vos droits de cotisation réels, et un professionnel.
 
 # Your savings plan, in ten thousand futures rather than one
 
-Prepared from the `pec` simulator (repo 12-plan-epargne-ca). A methods exercise under
+Prepared from the `pec` simulator (repo 12-plan-epargne). A methods exercise under
 declared assumptions; not financial advice. Figures as of 2026-08-29; base case: $10,000
 saved yearly for 30 years, 25 years of retirement, 35 % marginal tax while working, 25 %
 retired (replace with your own).

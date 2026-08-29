@@ -25,7 +25,7 @@ dev = ["pytest>=8", "ruff>=0.6"]
 pec = "pec.cli:app"
 
 [project.urls]
-Repository = "https://github.com/Guilou001/12-plan-epargne-ca"
+Repository = "https://github.com/Guilou001/12-plan-epargne"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pec"]
