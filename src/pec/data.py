@@ -27,7 +27,11 @@ def fetch() -> None:
 
 
 def load_portfolio_returns() -> pd.Series:
-    """Les rendements mensuels du portefeuille de politique, sur l'échantillon commun des six FNB."""
+    """Les rendements mensuels du portefeuille de politique, sur l'échantillon commun des six FNB.
+
+    Le dernier mois est retenu tel que téléchargé, même s'il est incomplet au jour du fetch
+    (convention déclarée ; l'effet mesuré sur le composé 2002-2026 est de 0,04 point).
+    """
     px = pd.read_csv(RAW / "prix_fnb.csv", index_col=0, parse_dates=True)
     monthly = px.resample("ME").last()
     rets = monthly.pct_change()

@@ -10,9 +10,11 @@ tests analytiques exacts. Le seul dépôt du portfolio écrit pour un client fin
 1. **À taux d'imposition égaux, REER et CELI sont EXACTEMENT équivalents.** Ce n'est pas une
    opinion, c'est une identité algébrique, et le simulateur la retrouve à 1e-12 près (testé).
    Tout l'avantage du REER tient dans l'écart entre le taux marginal d'aujourd'hui et celui
-   de la retraite : au cas type (35 % actif, 25 % retraité), REER d'abord bat CELI d'abord
-   de 8,0 % de richesse nette médiane (1 193 538 $ contre 1 105 368 $, mesuré). La carte des
-   taux donne le verdict pour tous les autres profils.
+   de la retraite, POURVU que le remboursement d'impôt soit réinvesti : au cas type (35 %
+   actif, 25 % retraité), REER d'abord bat CELI d'abord de 8,0 % de richesse nette médiane
+   (1 193 538 $ contre 1 105 368 $, mesuré) ; le remboursement dépensé, le classement
+   s'inverse (-18,9 %, mesuré, testé). La carte des taux donne le verdict pour tous les
+   autres profils.
 2. **Ce que la moyenne promet, un avenir sur vingt n'en livre pas la moitié.** Le plan « sur
    papier » à rendement constant (7,17 %/an, le composé 2002-2026 du portefeuille) promet un
    revenu de retraite net de 95 862 $/an ; la médiane simulée le tient (94 568 $), mais le
@@ -37,12 +39,15 @@ une distribution.
 
 ## Le moteur fiscal, en conventions déclarées
 
-Trois comptes, trois traitements. Le REER, cotisé en argent AVANT impôt : la déduction est
-réinvestie immédiatement (convention du « grossing up » : un budget après impôt b achète
-b/(1 - t) de cotisation brute), et le retrait est imposé au taux de la retraite. Le CELI,
-cotisé après impôt, croît et se retire sans impôt. Le compte non enregistré, cotisé après
-impôt, subit chaque année un impôt sur ses gains à l'inclusion de 50 % (gains réputés
-réalisés annuellement, pertes créditées immédiatement : simplification déclarée).
+Trois comptes, trois traitements. Le REER, cotisé en dollars AVANT impôt : la chaîne
+complète des remboursements d'impôt est réinvestie (le remboursement, puis le remboursement
+du remboursement, et ainsi de suite), ce qui équivaut à cotiser b/(1 - t) pour un budget
+après impôt b (convention du « grossing up », déclarée ; l'option `remboursement_reinvesti`
+du moteur permet de la couper, et la limite 1 dit ce que cela renverse) ; le retrait est
+imposé au taux de la retraite. Le CELI, cotisé après impôt, croît et se retire sans impôt.
+Le compte non enregistré, cotisé après impôt, subit chaque année un impôt sur ses gains à
+l'inclusion de 50 % au taux de la vie active, décumulation comprise (gains réputés réalisés
+annuellement, pertes créditées immédiatement : simplifications déclarées).
 
 La vérité connue qui verrouille le moteur : à taux égaux et sans plafond,
 
@@ -67,7 +72,8 @@ séparent les trois ordres de remplissage quand les taux sont égaux.
 35 % pendant la vie active, 25 % à la retraite (chiffres ronds, pas un barème). Les
 rendements viennent du portefeuille de politique du dépôt 03 (XIU 25 %, XSP 20 %, XIN 15 %,
 XRE 5 %, XBB 25 %, XSB 10 %, mêmes poids, déclaré) : 286 rendements mensuels, 2002-11 à
-2026-08, via yfinance (usage personnel, jamais commité).
+2026-08, via yfinance (usage personnel, jamais commité ; le dernier mois est tronqué au
+jour du téléchargement, effet de 0,04 point sur le composé, déclaré).
 
 Le Monte Carlo tire des blocs de 12 mois CONSÉCUTIFS à départ aléatoire : les enchaînements
 d'une année de crise (2008, 2020, 2022) restent intacts, les années sont indépendantes entre
@@ -107,21 +113,23 @@ lisez votre case.
 contient la moitié centrale des avenirs, la bande pâle en contient 90 %. La ligne pointillée
 est le plan à rendement constant : il suit la médiane presque exactement (1 517 321 $ contre
 1 535 877 $ à l'an 30), et c'est le piège : le chiffre unique du planificateur est BON en
-espérance et muet sur l'éventail, qui va du simple au triple entre p5 et p95.
+espérance et muet sur l'éventail, qui fait plus que tripler entre p5 et p95 (x3,2 à
+l'an 30, mesuré).
 
 ![Revenu soutenable](results/figures/revenu_soutenable.png)
 
 **Comment lire cette figure.** Pour chaque revenu en abscisse, la part des trajectoires
 capables de le servir pendant 25 ans. La ligne verticale grise est la promesse du plan
-constant (95 862 $) : un peu moins de la moitié des avenirs la tiennent (48 % en REER
-d'abord, lisible à l'intersection). La cible de 30 000 $ (pointillé) est quasi sûre sur
+constant (95 862 $) : 48,7 % des avenirs la tiennent en REER d'abord (mesuré, lisible à
+l'intersection). La cible de 30 000 $ (pointillé) est quasi sûre sur
 l'historique brut ; le tableau prudent ci-dessous la met à l'épreuve.
 
 ## Verdict 3 : le scénario prudent (mesuré, `results/tables/resume_ordres_prudent.csv`)
 
 L'échantillon 2002-2026 compose à 7,17 %/an, porté par quinze années de marché haussier ;
-le futur n'y a droit à rien. Le scénario prudent retire 2 points par année aux mêmes tirages
-(convention déclarée, dans l'esprit des normes de projection de FP Canada) :
+le futur n'y a droit à rien. Le scénario prudent retire 2/12 de point à chaque rendement
+mensuel des mêmes tirages, soit 2,1 points de composé annuel (7,17 % à 5,06 % ; convention
+déclarée, dans l'esprit des normes de projection de FP Canada) :
 
 | Ordre | Rendement | P(30 000 $ atteints) | Revenu soutenable médian | p5 |
 |---|---|---|---|---|
@@ -129,18 +137,18 @@ le futur n'y a droit à rien. Le scénario prudent retire 2 points par année au
 | Moitié-moitié | 5,06 % | 89,3 % | 50 942 $ | 25 011 $ |
 | CELI d'abord | 5,06 % | 88,0 % | 49 486 $ | 24 296 $ |
 
-**Lecture guidée.** Deux points de rendement en moins divisent presque le revenu médian par
-deux (94 568 $ à 53 434 $) : la capitalisation amplifie tout, dans les deux sens. Et à ce
+**Lecture guidée.** Deux points de rendement en moins retranchent 43 % du revenu médian
+(94 568 $ à 53 434 $) : la capitalisation amplifie tout, dans les deux sens. Et à ce
 niveau, l'ordre de remplissage cesse d'être cosmétique : 3,2 points de probabilité de
-réussite séparent REER d'abord de CELI d'abord, et le 5e percentile passe SOUS la cible
-dans tous les cas : environ un avenir sur vingt ne finance pas 30 000 $/an, quel que soit
-l'ordre.
+réussite séparent REER d'abord de CELI d'abord, et l'échec devient courant : 8,8 % des
+avenirs ne financent pas 30 000 $/an en REER d'abord, 12,0 % en CELI d'abord, environ un
+sur dix.
 
 ## Reproduire
 
 ```bash
 uv sync --locked --all-extras
-uv run pytest          # 10 tests analytiques, sans réseau
+uv run pytest          # 11 tests analytiques, sans réseau
 uv run pec fetch       # six FNB, yfinance (usage personnel)
 uv run pec simulate    # 3 ordres x 10 000 trajectoires + prudent + carte (~40 s)
 ```
@@ -148,28 +156,37 @@ uv run pec simulate    # 3 ordres x 10 000 trajectoires + prudent + carte (~40 s
 Les tests sont des vérités fermées : équivalence REER/CELI exacte à taux égaux, facteur
 (1 - t_r)/(1 - t_a) exact à taux différents, plafonds respectés au dollar, décumulation à
 rendement nul contre la forme fermée (750 000 $ financent exactement 25 ans à 30 000 $
-depuis un CELI, 1 000 000 $ depuis un REER à 25 %), bissection retrouvant la forme fermée,
+depuis un CELI, 1 000 000 $ depuis un REER à 25 %), bissection retrouvant l'annuité due à
+rendement nul ET constant, renversement du classement quand le remboursement est dépensé,
 bootstrap reproductible à graine fixée, moteur vectoriel contraint d'égaler le scalaire,
 carte neutre sur la diagonale.
 
 ## Limites, avec statut
 
-1. **La fiscalité est une maquette.** Taux marginaux constants par période, pas de paliers,
+1. **Le verdict REER dépend de la convention de réinvestissement.** Le moteur réinvestit
+   la chaîne complète des remboursements d'impôt ; si le remboursement est DÉPENSÉ, le
+   classement s'inverse au cas type (CELI d'abord gagne de 18,9 % de richesse nette,
+   mesuré, option `remboursement_reinvesti=False` et test dédié). L'avantage du REER est
+   un pari sur les deux taux À CONVENTION DONNÉE, et la discipline de réinvestir le
+   remboursement en fait partie. (Mesuré.)
+2. **La fiscalité est une maquette.** Taux marginaux constants par période, pas de paliers,
    pas de PSV ni de RRQ, pas de récupération de la PSV, pas de FERR à retraits minimums, pas
    de crédit d'impôt sur dividendes ; le non enregistré impose tout à l'inclusion de 50 %
-   chaque année. Chaque règle est déclarée dans `fiscal.py` ; la récupération de la PSV se
-   lit dans la carte comme un taux de retraite effectif plus élevé. (Précepte.)
-2. **L'échantillon de rendements est court et heureux.** 286 mois dont un seul grand krach ;
+   chaque année, au taux de la vie active même pendant la décumulation (sans effet ici, le
+   compte restant vide au cas type, déclaré). Chaque règle est déclarée dans `fiscal.py` ;
+   la récupération de la PSV se lit dans la carte comme un taux de retraite effectif plus
+   élevé. (Précepte.)
+3. **L'échantillon de rendements est court et heureux.** 286 mois dont un seul grand krach ;
    le bootstrap ne crée pas de crises qu'il n'a pas vues ; le scénario prudent est la
    réponse déclarée, pas une prévision. (Mesuré pour l'échantillon, précepte pour le
    prudent.)
-3. **Les années simulées sont indépendantes.** Les blocs de 12 mois préservent les
+4. **Les années simulées sont indépendantes.** Les blocs de 12 mois préservent les
    enchaînements intra-année, pas les cycles pluriannuels (un marché baissier de trois ans
    est sous-représenté). (Déclaré.)
-4. **Les plafonds sont figés** au niveau 2026 pendant 30 ans, sans indexation ni droits
+5. **Les plafonds sont figés** au niveau 2026 pendant 30 ans, sans indexation ni droits
    inutilisés reportés. (Déclaré ; l'indexation des deux plafonds jouerait dans le même
    sens pour les trois ordres.)
-5. **Aucun conseil.** Ce dépôt compare des mécaniques sous hypothèses déclarées ; il ne
+6. **Aucun conseil.** Ce dépôt compare des mécaniques sous hypothèses déclarées ; il ne
    connaît ni votre revenu, ni vos taux réels, ni votre tolérance au risque.
 
 ## Références
@@ -191,12 +208,14 @@ with the tax mechanics locked by exact analytic tests: with equal marginal tax r
 caps, RRSP and TFSA compound to the SAME final dollar (tested to 1e-12), and the entire
 RRSP advantage is the factor (1 - t_ret)/(1 - t_work). Base case (35 % working, 25 %
 retired): RRSP-first beats TFSA-first by 8.0 % of median after-tax wealth; a tax-rate map
-gives the verdict for every other profile, exactly zero on the diagonal. The deterministic
+gives the verdict for every other profile, exactly zero on the diagonal. The verdict
+assumes the tax refund is fully reinvested: spent instead, the ranking flips (TFSA-first
+wins by 18.9 %, measured and tested). The deterministic
 plan (7.17 %/yr, the 2002-2026 compound) promises a $95,862 sustainable retirement income;
 the simulated median delivers it, but the 5th percentile is $45,855. Under a declared
 prudent scenario (returns minus 2 points), the basic $30,000 target is only reached in
 91.2 % of futures (RRSP-first) versus 88.0 % (TFSA-first): filling order buys 3 points of
-success probability. Simplified declared tax conventions, no OAS/QPP, no advice; 10
+success probability. Simplified declared tax conventions, no OAS/QPP, no advice; 11
 closed-form tests, no network.
 
 ## Licence et citation

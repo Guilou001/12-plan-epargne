@@ -75,6 +75,24 @@ def test_revenu_soutenable_retrouve_la_forme_fermee():
     f = Fiscalite(tau_actif=0.35, tau_retraite=0.25)
     rev = revenu_soutenable(0.0, 750_000.0, 0.0, np.zeros(25), f)
     assert rev == pytest.approx(30_000.0, abs=2.0)
+    # rendement constant non nul : annuité due, C = W (1 - v) / (1 - v^M), v = 1/(1+r)
+    r, w, m = 0.12, 5_000_000.0, 25
+    v = 1.0 / (1.0 + r)
+    attendu = w * (1.0 - v) / (1.0 - v**m)
+    assert revenu_soutenable(0.0, w, 0.0, np.full(m, r), f) == pytest.approx(attendu, abs=2.0)
+
+
+def test_remboursement_depense_renverse_le_classement():
+    # la convention porte le verdict : remboursement dépensé, le REER perd son avantage
+    from pec.fiscal import richesse_nette
+
+    r = np.full(30, 0.05)
+    f = Fiscalite(tau_actif=0.35, tau_retraite=0.25, remboursement_reinvesti=False)
+    w = {}
+    for ordre in ("reer_d_abord", "celi_d_abord"):
+        reer, celi, ni = accumuler(r, 10_000.0, ordre, f)
+        w[ordre] = richesse_nette(reer, celi, ni, f)
+    assert w["celi_d_abord"] > w["reer_d_abord"]
 
 
 def test_bootstrap_reproductible_et_calibre():

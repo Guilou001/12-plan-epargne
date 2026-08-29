@@ -79,10 +79,14 @@ def decumuler_vec(reer0: np.ndarray, celi0: np.ndarray, ni0: np.ndarray, ret: np
 
 def revenu_soutenable_vec(reer: np.ndarray, celi: np.ndarray, ni: np.ndarray, ret: np.ndarray,
                           f: Fiscalite, n_iter: int = 40) -> np.ndarray:
-    """Le revenu net constant qui épuise exactement chaque trajectoire, par bissection vectorielle."""
+    """Le revenu net constant qui épuise exactement chaque trajectoire, par bissection vectorielle.
+
+    Borne haute prouvée : la richesse nette initiale, car le premier retrait précède toute
+    croissance (l'ancienne borne en richesse/horizon plafonnait quelques trajectoires extrêmes).
+    """
     n_annees = ret.shape[1]
     bas = np.zeros(len(reer))
-    haut = richesse_nette(reer, celi, ni, f) * 2.0 / max(n_annees, 1) + 1e5
+    haut = richesse_nette(reer, celi, ni, f) + 1.0
     for _ in range(n_iter):
         mid = (bas + haut) / 2.0
         annees, _ = decumuler_vec(reer, celi, ni, ret, mid, f)

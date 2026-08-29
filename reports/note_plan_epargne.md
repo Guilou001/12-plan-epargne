@@ -7,14 +7,16 @@ cas type : 10 000 $ d'épargne par an pendant 30 ans, 25 ans de retraite, taux m
 
 ## Ce que le simulateur établit
 
-**1. Le choix REER ou CELI est un pari sur vos deux taux d'imposition, rien d'autre.**
-À taux égaux, les deux comptes produisent exactement le même dollar final : c'est une
-identité algébrique, pas une opinion, et le simulateur la vérifie à la douzième décimale.
-Votre taux baissera à la retraite ? Le REER gagne, du facteur exact
-(1 - taux retraite)/(1 - taux actif) : au cas type, 15 % de plus par dollar cotisé, et
-8,0 % de richesse nette finale une fois les plafonds respectés. Votre taux MONTERA (gros
-FERR, récupération de la Sécurité de la vieillesse) ? Le CELI gagne, symétriquement. La
-carte des taux du rapport donne votre case en dix secondes.
+**1. Le choix REER ou CELI est un pari sur vos deux taux d'imposition, à une discipline
+près : réinvestir le remboursement.** À taux égaux, les deux comptes produisent exactement
+le même dollar final : c'est une identité algébrique, pas une opinion, et le simulateur la
+vérifie à la douzième décimale. Votre taux baissera à la retraite ? Le REER gagne, du
+facteur exact (1 - taux retraite)/(1 - taux actif) : au cas type, 15 % de plus par dollar
+cotisé, et 8,0 % de richesse nette finale une fois les plafonds respectés. Votre taux
+MONTERA (gros FERR, récupération de la Sécurité de la vieillesse) ? Le CELI gagne,
+symétriquement. Et si le remboursement d'impôt du REER est dépensé au lieu d'être
+réinvesti, le classement s'inverse entièrement (mesuré : -18,9 % au cas type). La carte
+des taux du rapport donne votre case en dix secondes.
 
 **2. Le chiffre unique d'un plan de retraite est bon en moyenne et muet sur le risque.**
 Le plan « sur papier » du cas type, calé sur le rendement composé 2002-2026 du
@@ -47,12 +49,14 @@ declared assumptions; not financial advice. Figures as of 2026-08-29; base case:
 saved yearly for 30 years, 25 years of retirement, 35 % marginal tax while working, 25 %
 retired (replace with your own).
 
-**1. RRSP vs. TFSA is a bet on your two tax rates, nothing else.** At equal rates the two
-accounts compound to exactly the same final dollar (an algebraic identity, verified by the
-simulator to twelve decimals). If your rate falls in retirement, the RRSP wins by exactly
-(1 - t_ret)/(1 - t_work): 15 % more per dollar at the base case, 8.0 % more final
-after-tax wealth once contribution caps bind. If your rate will RISE (large RRIF, OAS
-clawback), the TFSA wins, symmetrically: read your cell in the tax-rate map.
+**1. RRSP vs. TFSA is a bet on your two tax rates, plus one discipline: reinvesting the
+refund.** At equal rates the two accounts compound to exactly the same final dollar (an
+algebraic identity, verified by the simulator to twelve decimals). If your rate falls in
+retirement, the RRSP wins by exactly (1 - t_ret)/(1 - t_work): 15 % more per dollar at the
+base case, 8.0 % more final after-tax wealth once contribution caps bind. If your rate
+will RISE (large RRIF, OAS clawback), the TFSA wins, symmetrically: read your cell in the
+tax-rate map. And if the RRSP refund is spent rather than reinvested, the ranking flips
+entirely (measured: -18.9 % at the base case).
 
 **2. A single-number retirement plan is right on average and silent about risk.** The
 paper plan (7.17 %/yr, the 2002-2026 compound of the policy portfolio) promises $95,862
