@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Pour citer ce dépôt, utilisez les métadonnées ci-dessous."
+title: "plan-epargne-ca : REER, CELI et compte imposable, simulés plutôt que promis"
+authors:
+  - family-names: "Vaudescal"
+    given-names: "Guillaume"
+repository-code: "https://github.com/Guilou001/12-plan-epargne-ca"
+license: MIT
+date-released: "2026-08-29"
