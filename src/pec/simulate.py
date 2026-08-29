@@ -31,14 +31,19 @@ def rendement_deterministe(mensuels: np.ndarray) -> float:
     return float((1.0 + mensuels).prod() ** (12.0 / len(mensuels)) - 1.0)
 
 
-def accumuler_vec(acc: np.ndarray, budget: float, ordre: str, f: Fiscalite) -> tuple[np.ndarray, ...]:
-    """L'accumulation sur toutes les trajectoires à la fois ; mêmes conventions que fiscal.accumuler."""
+def accumuler_vec(acc: np.ndarray, budget: float, ordre: str, f: Fiscalite,
+                  inflation: float = 0.0) -> tuple[np.ndarray, ...]:
+    """L'accumulation sur toutes les trajectoires à la fois ; mêmes conventions que fiscal.accumuler.
+
+    ``inflation`` indexe le budget annuel : à 0, le plan est en dollars COURANTS et le même montant
+    nominal est versé pendant trente ans, ce qui fait baisser l'effort réel d'année en année.
+    """
     n_traj, n_annees = acc.shape
     reer = np.zeros(n_traj)
     celi = np.zeros(n_traj)
     ni = np.zeros(n_traj)
-    d_reer, d_celi, d_ni = cotiser(budget, ordre, f)      # budget constant : mêmes dépôts chaque année
     for a in range(n_annees):
+        d_reer, d_celi, d_ni = cotiser(budget * (1.0 + inflation) ** a, ordre, f)
         r = acc[:, a]
         reer = (reer + d_reer) * (1.0 + r)
         celi = (celi + d_celi) * (1.0 + r)
@@ -47,9 +52,14 @@ def accumuler_vec(acc: np.ndarray, budget: float, ordre: str, f: Fiscalite) -> t
 
 
 def decumuler_vec(reer0: np.ndarray, celi0: np.ndarray, ni0: np.ndarray, ret: np.ndarray,
-                  cible: np.ndarray | float, f: Fiscalite) -> tuple[np.ndarray, np.ndarray]:
+                  cible: np.ndarray | float, f: Fiscalite,
+                  inflation: float = 0.0) -> tuple[np.ndarray, np.ndarray]:
     """La décumulation vectorisée (retrait début d'année, ordre NI -> REER -> CELI) ;
-    retourne (années financées, legs net, 0 si ruine)."""
+    retourne (années financées, legs net, 0 si ruine).
+
+    ``inflation`` indexe la cible d'une année à l'autre : à 0, le revenu visé reste NOMINAL et son
+    pouvoir d'achat s'érode pendant toute la retraite.
+    """
     n_traj, n_annees = ret.shape
     reer, celi, ni = reer0.copy(), celi0.copy(), ni0.copy()
     cible = np.broadcast_to(np.asarray(cible, dtype=float), (n_traj,)).copy()
@@ -73,6 +83,7 @@ def decumuler_vec(reer0: np.ndarray, celi0: np.ndarray, ni0: np.ndarray, ret: np
         reer *= 1.0 + r
         celi *= 1.0 + r
         ni *= 1.0 + taux_net_ni(r, f)
+        cible = cible * (1.0 + inflation)
     legs = np.where(vivant, celi + ni + reer * (1.0 - f.tau_retraite), 0.0)
     return annees, legs
 
@@ -98,18 +109,25 @@ def revenu_soutenable_vec(reer: np.ndarray, celi: np.ndarray, ni: np.ndarray, re
 
 def run_monte_carlo(mensuels: np.ndarray, f: Fiscalite, budget: float,
                     annees_acc: int, annees_ret: int, cible_nette: float,
-                    n_traj: int = 10_000, seed: int = 0) -> pd.DataFrame:
+                    n_traj: int = 10_000, seed: int = 0,
+                    inflation: float = 0.0) -> pd.DataFrame:
     """Toutes les trajectoires pour les trois ordres de remplissage ; une ligne par trajectoire.
 
     Les mêmes tirages de rendements servent aux trois ordres : la comparaison est appariée.
+
+    ``inflation`` indexe le budget de cotisation ET la cible de revenu. Le défaut de 0 garde le
+    plan en dollars COURANTS, la convention des chiffres publiés : les 10 000 $ cotisés et les
+    30 000 $ visés ne sont jamais revalorisés sur cinquante-cinq ans, ce qui flatte la probabilité
+    d'atteinte. La variante indexée est mesurée dans `results/tables/sensibilites.csv`.
     """
     rng = np.random.default_rng(seed)
     acc = annees_bootstrap(mensuels, annees_acc, n_traj, rng)
     ret = annees_bootstrap(mensuels, annees_ret, n_traj, rng)
     frames = []
     for ordre in ORDRES:
-        reer, celi, ni = accumuler_vec(acc, budget, ordre, f)
-        annees, legs = decumuler_vec(reer, celi, ni, ret, cible_nette, f)
+        reer, celi, ni = accumuler_vec(acc, budget, ordre, f, inflation=inflation)
+        cible_debut = cible_nette * (1.0 + inflation) ** annees_acc
+        annees, legs = decumuler_vec(reer, celi, ni, ret, cible_debut, f, inflation=inflation)
         frames.append(pd.DataFrame({
             "ordre": ordre, "traj": np.arange(n_traj),
             "richesse_brute": reer + celi + ni,

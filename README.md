@@ -163,12 +163,24 @@ carte neutre sur la diagonale.
 
 ## Limites, avec statut
 
+Les trois premières sont chiffrées dans `results/tables/sensibilites.csv`, rejouées par
+`pec simulate` : aucune n'est discutée sans être mesurée.
+
+0. **Tout est en dollars COURANTS.** Les 10 000 $ cotisés chaque année et les 30 000 $ visés
+   à la retraite ne sont jamais revalorisés sur cinquante-cinq ans, et les rendements sont
+   nominaux. La probabilité d'atteinte de 99,5 % mesure donc la couverture d'une cible dont
+   le pouvoir d'achat s'érode. Le plan indexé à 2 % par an, cotisations ET cible, tombe à
+   **90,5 %**, et l'avantage du REER d'abord passe de +8,0 % à +3,8 % de richesse nette
+   (mesuré, option `inflation` de `run_monte_carlo`). C'est la limite qui déplace le plus le
+   verdict de tête.
 1. **Le verdict REER dépend de la convention de réinvestissement.** Le moteur réinvestit
    la chaîne complète des remboursements d'impôt ; si le remboursement est DÉPENSÉ, le
    classement s'inverse au cas type (CELI d'abord gagne de 18,9 % de richesse nette,
    mesuré, option `remboursement_reinvesti=False` et test dédié). L'avantage du REER est
    un pari sur les deux taux À CONVENTION DONNÉE, et la discipline de réinvestir le
-   remboursement en fait partie. (Mesuré.)
+   remboursement en fait partie. La convention porte aussi sur la DATE : le remboursement est
+   réinvesti l'année même de la cotisation, ce qui suppose une réduction de la retenue à la
+   source (formulaire T1213 au fédéral) ou une avance de trésorerie. (Mesuré et déclaré.)
 2. **La fiscalité est une maquette.** Taux marginaux constants par période, pas de paliers,
    pas de PSV ni de RRQ, pas de récupération de la PSV, pas de FERR à retraits minimums, pas
    de crédit d'impôt sur dividendes ; le non enregistré impose tout à l'inclusion de 50 %
@@ -186,6 +198,11 @@ carte neutre sur la diagonale.
 5. **Les plafonds sont figés** au niveau 2026 pendant 30 ans, sans indexation ni droits
    inutilisés reportés. (Déclaré ; l'indexation des deux plafonds jouerait dans le même
    sens pour les trois ordres.)
+5 bis. **Le plafond REER de 12 960 $ est ACTIF dans chaque case de la carte des taux**, alors
+   que le plafond et le taux marginal sont deux fonctions du même revenu : la carte suppose
+   partout les droits d'un revenu de 72 000 $. Avec les droits d'un revenu de 150 000 $
+   (27 000 $), l'avantage du REER d'abord au cas type passe de +8,0 % à +10,3 % de richesse
+   nette (mesuré). Lire une case suppose donc ce plafond-là, pas le vôtre. (Déclaré.)
 6. **Aucun conseil.** Ce dépôt compare des mécaniques sous hypothèses déclarées ; il ne
    connaît ni votre revenu, ni vos taux réels, ni votre tolérance au risque.
 

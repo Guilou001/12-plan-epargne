@@ -40,15 +40,15 @@ def fig_fan(fan: pd.DataFrame, promesse: pd.Series | None, dest: Path) -> None:
     fig, ax = plt.subplots(figsize=(8.8, 4.6))
     x = fan["annee"]
     ax.fill_between(x, fan["p5"], fan["p95"], color=OKABE_ITO[0], alpha=0.15,
-                    label="90 % des trajectoires (p5 à p95)")
+                    label="90 % des trajectoires (5e au 95e centile)")
     ax.fill_between(x, fan["p25"], fan["p75"], color=OKABE_ITO[0], alpha=0.35,
-                    label="La moitié centrale (p25 à p75)")
+                    label="La moitié centrale (25e au 75e centile)")
     ax.plot(x, fan["p50"], color=OKABE_ITO[0], label=f"Médiane ({_milliers(fan['p50'].iloc[-1])} $)")
     if promesse is not None:
         ax.plot(promesse.index, promesse.to_numpy(), color=OKABE_ITO[3], linestyle="--",
                 label=f"Plan à rendement constant ({_milliers(float(promesse.iloc[-1]))} $)")
     ax.set_xlabel("Années d'épargne")
-    ax.set_ylabel("Richesse accumulée ($, brute : REER avant impôt)")
+    ax.set_ylabel("Richesse accumulée (dollars)\nREER compté avant impôt sur les retraits", fontsize=10)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: _milliers(v)))
     ax.legend(fontsize=9, loc="upper left")
     ax.set_title("Le même plan, dix mille avenirs : l'éventail s'ouvre avec les années")
@@ -93,8 +93,9 @@ def fig_carte(carte: pd.DataFrame, cas_type: tuple[float, float], dest: Path) ->
     im = ax.pcolormesh(piv.columns * 100, piv.index * 100, piv.to_numpy(),
                        cmap="RdBu_r", vmin=-vmax, vmax=vmax, shading="nearest")
     for (tr, ta), v in piv.stack().items():
-        ax.text(ta * 100, tr * 100, f"{v:+.0f}".replace(".", ","), ha="center", va="center",
-                fontsize=8.5, color="black")
+        # « -0 » et « +0 » sont des artefacts d'arrondi : une case sous le demi-point s'écrit 0
+        texte = "0" if abs(v) < 0.5 else f"{v:+.0f}"
+        ax.text(ta * 100, tr * 100, texte, ha="center", va="center", fontsize=8.5, color="black")
     ax.plot([piv.columns.min() * 100, piv.columns.max() * 100],
             [piv.columns.min() * 100, piv.columns.max() * 100], color="0.2", linewidth=1.0,
             linestyle="--")
@@ -105,7 +106,7 @@ def fig_carte(carte: pd.DataFrame, cas_type: tuple[float, float], dest: Path) ->
     ax.xaxis.set_major_formatter(fr)
     ax.yaxis.set_major_formatter(fr)
     cb = fig.colorbar(im, ax=ax)
-    cb.set_label("Avantage du REER d'abord (% de richesse nette)")
+    cb.set_label("Richesse nette du REER d'abord rapportée\nà celle du CELI d'abord, écart en %")
     ax.legend(fontsize=9, loc="upper left")
     ax.set_title("Le REER gagne quand le taux baisse à la retraite, à l'égalité il est neutre")
     fig.savefig(dest)

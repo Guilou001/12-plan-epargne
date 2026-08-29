@@ -104,6 +104,30 @@ def simulate(out: Path = Path("results"), n_traj: int = 10_000, seed: int = 0) -
     resume_p.round(4).to_csv(tables / "resume_ordres_prudent.csv", index=False)
     pd.DataFrame([det_p]).round(4).to_csv(tables / "plan_deterministe_prudent.csv", index=False)
 
+    # ce que coûtent les trois conventions les plus lourdes, chacune REJOUÉE ici plutôt que
+    # discutée : l'absence d'indexation, la date du remboursement d'impôt, le plafond REER
+    from pec.fiscal import Fiscalite
+
+    sens = []
+    for nom, kwargs, f_var in [
+        ("référence (dollars courants, remboursement réinvesti la même année)", {}, f),
+        ("cible et cotisations indexées à 2 % par an", {"inflation": 0.02}, f),
+        ("remboursement d'impôt dépensé au lieu d'être réinvesti", {},
+         Fiscalite(tau_actif=TAU_ACTIF, tau_retraite=TAU_RETRAITE, remboursement_reinvesti=False)),
+        ("droits REER d'un revenu de 150 000 $ (27 000 $ au lieu de 12 960 $)", {},
+         Fiscalite(tau_actif=TAU_ACTIF, tau_retraite=TAU_RETRAITE, plafond_reer=27_000.0)),
+    ]:
+        m = simulate.run_monte_carlo(mensuels, f_var, BUDGET, ANNEES_ACC, ANNEES_RET, CIBLE,
+                                     n_traj=n_traj, seed=seed, **kwargs)
+        r_ = m[m["ordre"] == "reer_d_abord"]
+        c_ = m[m["ordre"] == "celi_d_abord"]
+        sens.append({"variante": nom,
+                     "p_succes_reer_d_abord": float(r_["succes"].mean()),
+                     "richesse_nette_mediane_reer": float(r_["richesse_nette"].median()),
+                     "avantage_reer_sur_celi_pct": 100.0 * (float(r_["richesse_nette"].median())
+                                                            / float(c_["richesse_nette"].median()) - 1.0)})
+    pd.DataFrame(sens).round(4).to_csv(tables / "sensibilites.csv", index=False)
+
     figures.fig_fan(fan, promesse, figs / "eventail_richesse.png")
     figures.fig_revenu(mc, det["revenu_promis"], CIBLE, figs / "revenu_soutenable.png")
     figures.fig_carte(carte, (TAU_ACTIF, TAU_RETRAITE), figs / "carte_des_ordres.png")
@@ -111,6 +135,8 @@ def simulate(out: Path = Path("results"), n_traj: int = 10_000, seed: int = 0) -
     typer.echo(f"rendement constant du plan sur papier : {100 * det['rendement_constant']:.2f} %/an ; "
                f"revenu promis {det['revenu_promis']:,.0f} $".replace(",", " "))
     typer.echo(resume.round(3).to_string(index=False))
+    typer.echo("sensibilité aux conventions :")
+    typer.echo(pd.DataFrame(sens).round(3).to_string(index=False))
 
 
 if __name__ == "__main__":
