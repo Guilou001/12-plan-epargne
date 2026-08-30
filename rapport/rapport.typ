@@ -39,6 +39,8 @@
 
 Un simulateur Monte Carlo des trois comptes d'épargne canadiens, alimenté par les rendements du portefeuille de politique du dépôt 03, avec les équivalences fiscales prouvées par des tests analytiques exacts. Le seul dépôt du portfolio écrit pour un client final. _English summary below._
 
+Le même contenu en PDF : #link("rapport/rapport.pdf")[rapport/rapport.pdf].
+
 == En bref
 
 + *À taux d'imposition égaux, REER et CELI sont EXACTEMENT équivalents.* Ce n'est pas une opinion, c'est une identité algébrique, et le simulateur la retrouve à 1e-12 près (testé). Tout l'avantage du REER tient dans l'écart entre le taux marginal d'aujourd'hui et celui de la retraite, POURVU que le remboursement d'impôt soit réinvesti : au cas type (35 % actif, 25 % retraité), REER d'abord bat CELI d'abord de 8,0 % de richesse nette médiane (1 193 538 \$ contre 1 105 368 \$, mesuré) ; le remboursement dépensé, le classement s'inverse (-18,9 %, mesuré, testé). La carte des taux donne le verdict pour tous les autres profils.

@@ -5,6 +5,8 @@ du portefeuille de politique du dépôt 03, avec les équivalences fiscales prou
 tests analytiques exacts. Le seul dépôt du portfolio écrit pour un client final.
 *English summary below.*
 
+Le même contenu en PDF : [rapport/rapport.pdf](rapport/rapport.pdf).
+
 ## En bref
 
 1. **À taux d'imposition égaux, REER et CELI sont EXACTEMENT équivalents.** Ce n'est pas une
