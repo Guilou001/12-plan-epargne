@@ -1,13 +1,24 @@
-# REER, CELI, ou les deux : le plan d'épargne simulé plutôt que promis
+# Comparer le REER et le CELI sans promettre un seul avenir
 
-Un simulateur Monte Carlo des trois comptes d'épargne canadiens, alimenté par les rendements
-du portefeuille de politique du dépôt 03, avec les équivalences fiscales prouvées par des
-tests analytiques exacts. Le seul dépôt du portfolio écrit pour un client final.
+Un plan d'épargne est souvent présenté avec un rendement moyen répété pendant plusieurs années. Toutefois, deux personnes qui obtiennent le même rendement moyen peuvent finir avec des revenus très différents, car les mauvaises années n'arrivent pas au même moment. Le type de compte et l'utilisation du remboursement d'impôt changent également le résultat.
+
+Le présent projet simule les trajectoires possibles d'un épargnant canadien dans un régime enregistré d'épargne-retraite, un compte d'épargne libre d'impôt et un compte non enregistré. Les rendements viennent du portefeuille de politique du projet 03, tandis que les règles fiscales sont simplifiées et déclarées.
+
+**Résultat principal.** Lorsque le taux d'imposition est identique au dépôt et au retrait, le REER et le CELI donnent exactement la même richesse nette. Avec un taux de 35 % aujourd'hui et de 25 % à la retraite, remplir le REER d'abord augmente la richesse médiane de 8,0 %, à condition de réinvestir le remboursement. S'il est dépensé, le classement s'inverse et l'écart atteint -18,9 %. De plus, un plan déterministe annonce 95 862 dollars de revenu annuel, alors que cinq trajectoires simulées sur cent donnent moins de 45 855 dollars.
+
+Afin d'expliquer ces écarts, nous présenterons d'abord les comptes, les règles fiscales et le profil utilisé. Dans un deuxième temps, nous démontrerons l'équivalence entre le REER et le CELI lorsque les taux sont égaux. Ensuite, nous simulerons les rendements et comparerons les ordres de cotisation. Enfin, nous étudierons les scénarios prudents, les limites du modèle et la manière de refaire les calculs.
+
+Le même contenu en PDF : [rapport/rapport.pdf](rapport/rapport.pdf).
+
+<details>
+<summary>Résumé en anglais</summary>
+
 *English summary below.*
 
 Le même contenu en PDF : [rapport/rapport.pdf](rapport/rapport.pdf).
 
-## En bref
+</details>
+## Les résultats en détail
 
 1. **À taux d'imposition égaux, REER et CELI sont EXACTEMENT équivalents.** Ce n'est pas une
    opinion, c'est une identité algébrique, et le simulateur la retrouve à 1e-12 près (testé).
@@ -51,7 +62,7 @@ Le compte non enregistré, cotisé après impôt, subit chaque année un impôt 
 l'inclusion de 50 % au taux de la vie active, décumulation comprise (gains réputés réalisés
 annuellement, pertes créditées immédiatement : simplifications déclarées).
 
-La vérité connue qui verrouille le moteur : à taux égaux et sans plafond,
+Le résultat calculable d'avance qui contrôle le moteur : à taux égaux et sans plafond,
 
 ```
 b/(1 - t) x (1 + r)^N x (1 - t)  =  b x (1 + r)^N
@@ -157,7 +168,7 @@ uv run pec simulate    # 3 ordres x 10 000 trajectoires + prudent + carte (~40 s
 
 Les tests sont des vérités fermées : équivalence REER/CELI exacte à taux égaux, facteur
 (1 - t_r)/(1 - t_a) exact à taux différents, plafonds respectés au dollar, décumulation à
-rendement nul contre la forme fermée (750 000 $ financent exactement 25 ans à 30 000 $
+rendement nul contre la formule exacte (750 000 $ financent exactement 25 ans à 30 000 $
 depuis un CELI, 1 000 000 $ depuis un REER à 25 %), bissection retrouvant l'annuité due à
 rendement nul ET constant, renversement du classement quand le remboursement est dépensé,
 bootstrap reproductible à graine fixée, moteur vectoriel contraint d'égaler le scalaire,
